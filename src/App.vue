@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <ListeDesRestaurants msg="Coucou bg"/>
+    <ListeDesRestaurants msg="/"/>
   </div>
 </template>
 
@@ -22,6 +22,18 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+html {
+  background: url('assets/new_york.jpg') no-repeat center center fixed;
+}
+
+body {
+  margin: 8% !important; 
+  min-height: auto !important;
+}
+
+.md-table-head-label {
+  font-size: 200%;
 }
 </style>
