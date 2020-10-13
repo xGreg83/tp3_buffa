@@ -78,12 +78,37 @@
 					</md-tab>
 
 					<md-tab md-label="Notation">
-						{{grades}}
+						<ul>
+							<li v-for="item in grades" :key="item.date">
+								{{ item.date }}
+								{{ item.grade }}
+								{{ item.score }}
+							</li>
+						</ul>
 					</md-tab>
 
 					<md-tab md-label="Emplacement">
 						{{adresse}}
 						{{ville}}
+						<div style="height: 500px; width: 100%">
+							<div style="height: 200px overflow: auto;">
+								<p>Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }}</p>
+							</div>
+							<l-map
+							:zoom="zoom"
+							:center="center"
+							:options="mapOptions"
+							style="height: 80%"
+							@update:center="centerUpdate"
+							@update:zoom="zoomUpdate"
+							>
+								<l-tile-layer
+								:url="url"
+								/>
+								<l-marker :lat-lng="withPopup">
+								</l-marker>
+							</l-map>
+						</div>
 					</md-tab>
 				</md-tabs>
 
@@ -148,9 +173,24 @@
 
 <script>
 import _ from "lodash";
+import { LMap, LMarker, LTileLayer } from 'vue2-leaflet';
+import { latLng } from "leaflet";
+import { Icon } from 'leaflet';
+
+delete Icon.Default.prototype._getIconUrl;
+Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 export default {
 	name: 'ListeDesRestaurants',
+	components: {
+		LMap,
+		LMarker,
+		LTileLayer
+	},
 	data: function() {
 		return {
 			restaurants: [],
@@ -172,6 +212,16 @@ export default {
 			restaurantSupprimer: false,
 			restaurantModifier: false,
 			editedID: "",
+
+			zoom: 13,
+			center: null,
+			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+			withPopup: null,
+			currentZoom: 11.5,
+			currentCenter: null,
+			mapOptions: {
+				zoomSnap: 0.5
+			},
 		}
 	},
 	mounted() {
@@ -179,6 +229,12 @@ export default {
 		this.getRestaurantsFromServer();
 	},
 	methods: {
+		zoomUpdate(zoom) {
+			this.currentZoom = zoom;
+		},
+		centerUpdate(center) {
+			this.currentCenter = center;
+		},
 		pagePrecedente() {
 			if (this.page === 0) return;
 
@@ -231,6 +287,10 @@ export default {
 			this.adresse = item.address
 			this.grades = item.grades;
 			console.log(item);
+
+			this.center = latLng(item.address.coord[1], item.address.coord[0]);
+			this.withPopup = latLng(item.address.coord[1], item.address.coord[0]);
+			this.currentCenter = latLng(item.address.coord[1], item.address.coord[0]);
 		},
 		supprimerRestaurant(r) {
 			let url = "http://localhost:8080/api/restaurants/" + r._id;
