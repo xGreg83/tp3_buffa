@@ -43,7 +43,7 @@
 									<div class="md-layout-item md-small-size-100">
 										<md-field>
 											<label>Nom</label>
-											<md-input name="nom" type="text" required v-model="nom"/>
+											<md-input name="nom" type="text" required v-model="editnom"/>
 										</md-field>
 									</div>
 								</div>
@@ -51,7 +51,7 @@
 									<div class="md-layout-item md-small-size-100">
 										<md-field>
 											<label>Cuisine</label>
-											<md-input name="cuisine" type="text" required v-model="cuisine"/>
+											<md-input name="cuisine" type="text" required v-model="editcuisine"/>
 										</md-field>
 									</div>
 								</div>
@@ -78,22 +78,29 @@
 					</md-tab>
 
 					<md-tab md-label="Notation">
-						<ul>
-							<li v-for="item in grades" :key="item.date">
-								{{ item.date }}
-								{{ item.grade }}
-								{{ item.score }}
-							</li>
-						</ul>
+						<md-table>
+							<md-table-row>
+								<md-table-head></md-table-head>
+								<md-table-head>Date</md-table-head>
+								<md-table-head>Grade</md-table-head>
+								<md-table-head>Note</md-table-head>
+							</md-table-row>
+
+							<md-table-row v-for="item in grades" :key="item.date">
+								<md-table-cell><span class="material-icons">grade</span></md-table-cell>
+								<md-table-cell>{{ format_date(item.date) }}</md-table-cell>
+								<md-table-cell>{{ item.grade }}</md-table-cell>
+								<md-table-cell>{{ item.score }}</md-table-cell>
+							</md-table-row>
+						</md-table>
 					</md-tab>
 
 					<md-tab md-label="Emplacement">
-						{{adresse}}
-						{{ville}}
+						Ville : {{ville}}
+						<br>
+						Adresse complète : {{adresse.building}} {{adresse.street}}, {{ville}} {{adresse.zipcode}}
+						<br>
 						<div style="height: 500px; width: 100%">
-							<div style="height: 200px overflow: auto;">
-								<p>Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }}</p>
-							</div>
 							<l-map
 							:zoom="zoom"
 							:center="center"
@@ -176,6 +183,7 @@ import _ from "lodash";
 import { LMap, LMarker, LTileLayer } from 'vue2-leaflet';
 import { latLng } from "leaflet";
 import { Icon } from 'leaflet';
+import moment from 'moment';
 
 delete Icon.Default.prototype._getIconUrl;
 Icon.Default.mergeOptions({
@@ -196,6 +204,8 @@ export default {
 			restaurants: [],
 			nom: "",
 			cuisine: "",
+			editnom: "",
+			editcuisine: "",
 			ville: "",
 			adresse: [],
 			grades: [],
@@ -212,12 +222,11 @@ export default {
 			restaurantSupprimer: false,
 			restaurantModifier: false,
 			editedID: "",
-
 			zoom: 13,
 			center: null,
 			url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 			withPopup: null,
-			currentZoom: 11.5,
+			currentZoom: 11,
 			currentCenter: null,
 			mapOptions: {
 				zoomSnap: 0.5
@@ -229,6 +238,11 @@ export default {
 		this.getRestaurantsFromServer();
 	},
 	methods: {
+		format_date(value){
+			if (value) {
+				return moment(String(value)).format('DD/MM/YYYY')
+			}
+		},
 		zoomUpdate(zoom) {
 			this.currentZoom = zoom;
 		},
@@ -275,8 +289,8 @@ export default {
 		}, 300),
 		afficheEditRestaurant(event) {
 			this.showEditForm = true;
-			this.nom = event.name;
-			this.cuisine = event.cuisine;
+			this.editnom = event.name;
+			this.editcuisine = event.cuisine;
 			this.editedID = event._id;
 		},
 		detailsRestaurant(item) {
@@ -389,8 +403,8 @@ export default {
 				this.restaurantModifier = true
 			}, 1500)
 
-			this.nom = "";
-			this.cuisine = "";
+			this.editnom = "";
+			this.editcuisine = "";
 			this.restaurantModifier = false;
 		},
 		getColor(index) {
