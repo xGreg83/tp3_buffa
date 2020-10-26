@@ -71,10 +71,13 @@
 
 				<md-tabs md-dynamic-height>
 					<md-tab md-label="Détails du restaurant">
-						<ul>
-							<li>Nom du restaurant : {{nom}}</li>
-							<li>Type de cuisine : {{cuisine}}</li>
-						</ul>
+						<md-content>
+							<ul>
+								<li>Nom du restaurant : {{nom}}</li>
+								<li>Type de cuisine : {{cuisine}}</li>
+							</ul>
+							<p><img style="width:100%" :src="selectedImage" alt=""></p>
+						</md-content>
 					</md-tab>
 
 					<md-tab md-label="Notation">
@@ -105,9 +108,6 @@
 							:zoom="zoom"
 							:center="center"
 							:options="mapOptions"
-							style="height: 80%"
-							@update:center="centerUpdate"
-							@update:zoom="zoomUpdate"
 							>
 								<l-tile-layer
 								:url="url"
@@ -231,6 +231,15 @@ export default {
 			mapOptions: {
 				zoomSnap: 0.5
 			},
+			images: [
+				'https://www.lareservedelamala.com/wp-content/uploads/2019/03/galerie4.jpg',
+				'https://img.freepik.com/photos-gratuite/restaurant-interieur_1127-3394.jpg?size=626&ext=jpg',
+				'https://www.tourismelandes.com/wp-content/uploads/wpetourisme/IMG-4497.jpeg',
+				'https://lh3.googleusercontent.com/proxy/5QFRKblnfTjkxwbrFheRJXqjwRfQJXI32hWHJ8sQHEvXUj2n7dSOyOzn_2KyYWXkhm-qkQOshFv73L1Ol3YDg2Ahy8tHM5AIyRoMN3bKNNiKDohx0qOf7U-BtxrM',
+				'https://static.actu.fr/uploads/2020/06/img-9364.jpg',
+				'https://lh3.googleusercontent.com/proxy/aODrijSitHcIPBLvia2SVLR5sMppByrqJwrn1v8aIqSgY60_D5c0u5YRNS-tJl1W1cCfOaWX-7iB8Fjsm570cV80fyOVAq9H4Lv7AgWH2NlY6LevU5N-rFu_hLYeenRFaZEcYxIpUXePQAg'
+			],
+			selectedImage: null
 		}
 	},
 	mounted() {
@@ -294,6 +303,7 @@ export default {
 			this.editedID = event._id;
 		},
 		detailsRestaurant(item) {
+			this.selectedImage = this.images[Math.floor(Math.random()*this.images.length)];
 			this.showDetailsForm = true;
 			this.nom = item.name;
 			this.cuisine = item.cuisine;
