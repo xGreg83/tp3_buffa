@@ -73,8 +73,8 @@
 					<md-tab md-label="Détails du restaurant">
 						<md-content>
 							<ul>
-								<li>Nom du restaurant : {{nom}}</li>
-								<li>Type de cuisine : {{cuisine}}</li>
+								<li>Nom du restaurant : {{infonom}}</li>
+								<li>Type de cuisine : {{infocuisine}}</li>
 							</ul>
 							<p><img style="width:100%" :src="selectedImage" alt=""></p>
 						</md-content>
@@ -206,6 +206,8 @@ export default {
 			cuisine: "",
 			editnom: "",
 			editcuisine: "",
+			infonom: "",
+			infocuisine: "",
 			ville: "",
 			adresse: [],
 			grades: [],
@@ -305,8 +307,8 @@ export default {
 		detailsRestaurant(item) {
 			this.selectedImage = this.images[Math.floor(Math.random()*this.images.length)];
 			this.showDetailsForm = true;
-			this.nom = item.name;
-			this.cuisine = item.cuisine;
+			this.infonom = item.name;
+			this.infocuisine = item.cuisine;
 			this.ville = item.borough;
 			this.adresse = item.address
 			this.grades = item.grades;
